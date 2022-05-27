@@ -1,5 +1,5 @@
-#if ENABLE_PLAYFABSERVER_API && !DISABLE_PLAYFAB_STATIC_API
-
+//#if ENABLE_PLAYFABSERVER_API && !DISABLE_PLAYFAB_STATIC_API
+#if !DISABLE_PLAYFABSERVER_API && !DISABLE_PLAYFAB_STATIC_API
 using System;
 using System.Collections.Generic;
 using PlayFab.ServerModels;
@@ -144,8 +144,8 @@ namespace PlayFab
             var callSettings = PlayFabSettings.staticSettings;
             if (string.IsNullOrEmpty(callSettings.DeveloperSecretKey)) { throw new PlayFabException(PlayFabExceptionCode.DeveloperKeyNotSet, "Must set DeveloperSecretKey in settings to call this method"); }
 
-
-            PlayFabHttp.MakeApiCall("/Server/BanUsers", request, AuthType.DevSecretKey, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+            PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.DevSecretKey, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+            //PlayFabHttp.MakeApiCall("/Server/BanUsers", request, AuthType.DevSecretKey, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 
         /// <summary>
@@ -1615,8 +1615,8 @@ namespace PlayFab
             var callSettings = PlayFabSettings.staticSettings;
             if (string.IsNullOrEmpty(callSettings.DeveloperSecretKey)) { throw new PlayFabException(PlayFabExceptionCode.DeveloperKeyNotSet, "Must set DeveloperSecretKey in settings to call this method"); }
 
-
-            PlayFabHttp.MakeApiCall("/Server/UpdateBans", request, AuthType.DevSecretKey, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+            PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.DevSecretKey, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+            //PlayFabHttp.MakeApiCall("/Server/UpdateBans", request, AuthType.DevSecretKey, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 
         /// <summary>

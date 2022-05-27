@@ -84,6 +84,7 @@ namespace PlayFab
         #region staticSettings Redirects
         // You must set this value for PlayFabSdk to work properly (Found in the Game Manager for your title, at the PlayFab Website)
         public static string TitleId { get { return staticSettings.TitleId; } set { staticSettings.TitleId = value; } }
+        public static int SessionCounter { get { return staticSettings.SessionCounter; } set { staticSettings.SessionCounter = value; } }
         /// <summary> The name of a customer vertical. This is only for customers running a private cluster.  Generally you shouldn't touch this </summary>
         internal static string VerticalName { get { return staticSettings.VerticalName; } set { staticSettings.VerticalName = value; } }
 #if ENABLE_PLAYFABSERVER_API || ENABLE_PLAYFABADMIN_API || UNITY_EDITOR

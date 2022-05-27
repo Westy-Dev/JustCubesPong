@@ -3,8 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using PlayFab;
 using PlayFab.ClientModels;
+using PlayFab.ServerModels;
+using PlayFab.Internal;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Security.Cryptography;
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 public class PlayFabManager : MonoBehaviour
 {
@@ -86,7 +93,7 @@ public class PlayFabManager : MonoBehaviour
             return;
         }
 
-        var request = new RegisterPlayFabUserRequest
+        var request = new PlayFab.ClientModels.RegisterPlayFabUserRequest
         {
             Email = registerEmailInput.text,
             Username = registerUsernameInput.text,
@@ -94,10 +101,13 @@ public class PlayFabManager : MonoBehaviour
             Password = registerPasswordInput.text,
             RequireBothUsernameAndEmail = false
         };
-        PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnRegisterError);
+        Dictionary<string, string> extraHeaders = new Dictionary<string, string>();
+        var requestVal = EncryptString("RegisterPlayFabUser");
+        extraHeaders.Add("C0", requestVal);
+        PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnRegisterError, null, extraHeaders);
     }
 
-    void OnRegisterSuccess(RegisterPlayFabUserResult result)
+    void OnRegisterSuccess(PlayFab.ClientModels.RegisterPlayFabUserResult result)
     {
         messageText.text = "Succesfully registered!";
     }
@@ -108,47 +118,88 @@ public class PlayFabManager : MonoBehaviour
         Debug.Log("Error registering : " + error.GenerateErrorReport());
     }
 
+
+   //Encryption function starts.
+    public static string EncryptString(string PlainText)
+    {
+      var key = "b14ca5898a4e4133bbce2ea2315a1916";
+      byte[] iv = new byte[16];
+      byte[] array;
+
+      using (Aes aes = Aes.Create())
+      {
+        aes.Key = Encoding.UTF8.GetBytes(key);
+        aes.IV = iv;
+
+        ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
+        using (MemoryStream memoryStream = new MemoryStream())
+        {
+          using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
+          {
+            using (StreamWriter streamWriter = new StreamWriter((Stream)cryptoStream))
+            {
+              streamWriter.Write(PlainText);
+            }
+
+            array = memoryStream.ToArray();
+          }
+        }
+      }
+
+      return Convert.ToBase64String(array);
+    }
+    //Encryption function ends.
+
     // Update is called once per frame
     public void LoginButton()
     {
-        var request = new LoginWithPlayFabRequest
+        var request = new PlayFab.ClientModels.LoginWithPlayFabRequest
         {
             Username = loginUsernameInput.text,
             Password = loginPasswordInput.text,
-            InfoRequestParameters = new GetPlayerCombinedInfoRequestParams
+            InfoRequestParameters = new PlayFab.ClientModels.GetPlayerCombinedInfoRequestParams
             {
                 GetPlayerProfile = true
             }
         };
-
-        PlayFabClientAPI.LoginWithPlayFab(request, onLoginSuccess, onLoginError);
+        Dictionary<string, string> extraHeaders = new Dictionary<string, string>();
+        var requestVal = EncryptString("LoginWithPlayFab");
+        extraHeaders.Add("C0", requestVal);
+        PlayFabClientAPI.LoginWithPlayFab(request, onLoginSuccess, onLoginError, null, extraHeaders);
     }
 
-    void onLoginSuccess(LoginResult result)
+    void onLoginSuccess(PlayFab.ClientModels.LoginResult result)
     {
         Debug.Log("Successful login/account create!");
         SceneManager.LoadScene("Pong Game");
+        PlayerPrefs.SetString("playFabId", result.PlayFabId);
     }
 
     void onLoginError(PlayFabError error)
     {
         Debug.Log("Error while logging in/creating account");
+    if(error.ErrorMessage == "The account making this request is currently banned")
+      messageText.text = "Daily play limit of 30 tries exceeded. Please try tomorrow";
+    else
         messageText.text = error.ErrorMessage;
         Debug.Log(error.GenerateErrorReport());
     }
 
     public void PasswordResetButton()
     {
-        var request = new SendAccountRecoveryEmailRequest
+        var request = new PlayFab.ClientModels.SendAccountRecoveryEmailRequest
         {
             Email = resetPasswordEmailInput.text,
             TitleId = TitleID
         };
-
-        PlayFabClientAPI.SendAccountRecoveryEmail(request, onPasswordResetSuccess, onPasswordResetError);
+        Dictionary<string, string> extraHeaders = new Dictionary<string, string>();
+        var requestVal = EncryptString("SendAccountRecoveryEmail");
+        extraHeaders.Add("C0", requestVal);
+        PlayFabClientAPI.SendAccountRecoveryEmail(request, onPasswordResetSuccess, onPasswordResetError, null, extraHeaders);
     }
 
-    void onPasswordResetSuccess(SendAccountRecoveryEmailResult result)
+    void onPasswordResetSuccess(PlayFab.ClientModels.SendAccountRecoveryEmailResult result)
     {
         Debug.Log("Password reset email sent!");
         messageText.text = "Password reset email sent!";
@@ -163,21 +214,32 @@ public class PlayFabManager : MonoBehaviour
 
     public void SendLeaderboard(int score)
     {
-        var request = new UpdatePlayerStatisticsRequest
+    var val1 = 1;
+        var request = new PlayFab.ClientModels.UpdatePlayerStatisticsRequest
         {
-            Statistics = new List<StatisticUpdate>
+            Statistics = new List<PlayFab.ClientModels.StatisticUpdate>
             {
-                new StatisticUpdate
+                new PlayFab.ClientModels.StatisticUpdate
                 {
                     StatisticName = "Score",
                     Value = score
+                    
+                },
+                new PlayFab.ClientModels.StatisticUpdate
+                {
+                    StatisticName = "sessionCounter",
+                    Value = 1 //This will work as an increment counter and will increase the value in PlayFab by 1.
                 }
             }
         };
-        PlayFabClientAPI.UpdatePlayerStatistics(request, OnLeaderboardUpdate, OnLeaderboardError);
+        Dictionary<string, string> extraHeaders = new Dictionary<string, string>();
+        var requestVal = EncryptString("UpdatePlayerStatistics");
+        extraHeaders.Add("C0", requestVal);
+
+        PlayFabClientAPI.UpdatePlayerStatistics(request, OnLeaderboardUpdate, OnLeaderboardError, null, extraHeaders);
     }
 
-    void OnLeaderboardUpdate(UpdatePlayerStatisticsResult result)
+    void OnLeaderboardUpdate(PlayFab.ClientModels.UpdatePlayerStatisticsResult result)
     {
         Debug.Log("Successful Leaderboard Sent");
     }
@@ -189,17 +251,19 @@ public class PlayFabManager : MonoBehaviour
 
     public void GetLeaderBoard()
     {
-        var request = new GetLeaderboardRequest
+        var request = new PlayFab.ClientModels.GetLeaderboardRequest
         {
             StatisticName = "Score",
             StartPosition = 0,
             MaxResultsCount = 100
         };
-
-        PlayFabClientAPI.GetLeaderboard(request, OnLeaderboardGet, OnGetLeaderboardError);
+        var requestVal = EncryptString("GetLeaderBoard");
+        Dictionary<string, string> extraHeaders = new Dictionary<string, string>();
+        extraHeaders.Add("C0", requestVal);
+        PlayFabClientAPI.GetLeaderboard(request, OnLeaderboardGet, OnGetLeaderboardError, null, extraHeaders);
     }
 
-    void OnLeaderboardGet(GetLeaderboardResult result)
+    void OnLeaderboardGet(PlayFab.ClientModels.GetLeaderboardResult result)
     {
         Debug.Log("Obtained Leaderboard");
         foreach(var item in result.Leaderboard)
@@ -221,32 +285,121 @@ public class PlayFabManager : MonoBehaviour
 
     public void GetUserHighScore()
     {
-        var request = new GetPlayerStatisticsRequest
+        var request = new PlayFab.ClientModels.GetPlayerStatisticsRequest
         {
-            StatisticNames = new List<string> { "Score" }
+            StatisticNames = new List<string> { "Score", "sessionCounter" }
         };
-
-        PlayFabClientAPI.GetPlayerStatistics(request, OnHighScoreGet, onHighScoreError);
+        Dictionary<string, string> extraHeaders = new Dictionary<string, string>();
+        var requestVal = EncryptString("GetPlayerStatistics");
+        extraHeaders.Add("C0", requestVal);
+        PlayFabClientAPI.GetPlayerStatistics(request, OnHighScoreGet, onHighScoreError, null, extraHeaders);
     }
 
-    void OnHighScoreGet(GetPlayerStatisticsResult result)
+    void OnHighScoreGet(PlayFab.ClientModels.GetPlayerStatisticsResult result)
     {
-        Debug.Log("Obtained Highscore = " + result.Statistics[0].Value);
-
-        if (PlayerBestScore != null)
+      for(int i = 0; i < result.Statistics.Count; i++)
+      {
+        if(result.Statistics[i].StatisticName == "Score")
         {
-            PlayerBestScore.GetComponent<Text>().text = "Your Best: " + result.Statistics[0].Value;
-        }
+          Debug.Log("Obtained Highscore = " + result.Statistics[i].Value);
+          if (PlayerBestScore != null)
+          {
+              PlayerBestScore.GetComponent<Text>().text = "Your Best: " + result.Statistics[i].Value;
+          }
 
-        if(PlayerBestScoreGameOver != null)
-        {
-            PlayerBestScoreGameOver.GetComponent<Text>().text = "Your Best: " + result.Statistics[0].Value;
+          if(PlayerBestScoreGameOver != null)
+          {
+              PlayerBestScoreGameOver.GetComponent<Text>().text = "Your Best: " + result.Statistics[i].Value;
+          }
         }
+        if(result.Statistics[i].StatisticName == "sessionCounter")
+        {
+          if (result.Statistics[i].Value >= PlayFabSettings.staticSettings.SessionCounter)
+          {
+            string playFabId = PlayerPrefs.GetString("playFabId");
+            AddBan(playFabId);
+          }
+        }
+      } 
     }
+
+ 
+    void OnBanUserSuccess(PlayFab.ServerModels.BanUsersResult result)
+    {
+    var request = new PlayFab.ServerModels.UpdateBansRequest
+        {
+             Bans = new List<UpdateBanRequest>() {
+                new UpdateBanRequest() {
+                    BanId = result.BanData[0].BanId,
+                    Expires = DateTime.UtcNow.Date.AddDays(1), // It will ban the player for rest of the day.
+                    Reason = "Play time exceeded"
+                }
+            }
+        };
+    Dictionary<string, string> extraHeaders = new Dictionary<string, string>();
+        var requestVal = EncryptString("UpdateBans");
+        extraHeaders.Add("C0", requestVal);
+    PlayFabServerAPI.UpdateBans(request, OnUpdateBanUserSuccess, OnUpdateBanUserFailure, null, extraHeaders);
+        
+    }
+
+    void OnUpdateBanUserSuccess(PlayFab.ServerModels.UpdateBansResult result)
+    {
+        Debug.Log("You are banned from playing because your maximum number of tries for a day has exceeded."); 
+        SceneManager.LoadScene("Login Screen");
+    }
+
+    void OnUpdateBanUserFailure(PlayFabError error)
+    {
+        Debug.Log("Error when banning the player : " + error.GenerateErrorReport());
+    } 
+
+    void OnBanUserFailure(PlayFabError error)
+    {
+        Debug.Log("Error when banning the player : " + error.GenerateErrorReport());
+    } 
 
     void onHighScoreError(PlayFabError error)
     {
         Debug.Log("Error when obtaining high score : " + error.GenerateErrorReport());
     }
+
+public void AddBan(string playFabId) {
+    string currentTime = DateTime.UtcNow.ToString("hh:mm tt");
+    int totalMinutes = 0;
+    if (currentTime.Contains("PM"))
+            {
+                int hours = Convert.ToInt32(currentTime.Substring(0, 2));
+                int HoursInminutes = hours * 60;
+                string minutesInString = currentTime.Split(':')[1];
+                int minutes = Convert.ToInt32(minutesInString.Remove(2));
+                totalMinutes = HoursInminutes + minutes;
+                Console.WriteLine(totalMinutes);
+            }
+            else
+            {
+                int hours = Convert.ToInt32(currentTime.Substring(0, 2));
+                int HoursInminutes = (hours % 60) * 60;
+                string minutesInString = currentTime.Split(':')[1];
+                int minutes = Convert.ToInt32(minutesInString.Remove(2));
+                totalMinutes = HoursInminutes + minutes;
+                Console.WriteLine(totalMinutes);
+            }
+    uint remaining = Convert.ToUInt32(1440 - totalMinutes)/60;
+    var request = new PlayFab.ServerModels.BanUsersRequest
+        {
+             Bans = new List<BanRequest>() {
+                new BanRequest() {
+                    DurationInHours = remaining,
+                    PlayFabId = playFabId,
+                    Reason = "Play time exceeded",
+                }
+            }
+        };
+    Dictionary<string, string> extraHeaders = new Dictionary<string, string>();
+        var requestVal = EncryptString("BanUsers");
+        extraHeaders.Add("C0", requestVal);
+    PlayFabServerAPI.BanUsers(request, OnBanUserSuccess, OnBanUserFailure, null, extraHeaders);
+}
 
 }

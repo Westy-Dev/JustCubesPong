@@ -25,3 +25,4 @@ MonoBehaviour:
   LoggerPort: 0
   EnableRealTimeLogging: 0
   LogCapLimit: 30
+  SessionCounter: 30

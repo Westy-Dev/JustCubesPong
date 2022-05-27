@@ -162,7 +162,7 @@ namespace PlayFab.Internal
                 settings = apiSettings,
                 context = authenticationContext,
                 CustomData = customData,
-                Payload = Encoding.UTF8.GetBytes(serializer.SerializeObject(request)),
+                Payload = Encoding.UTF8.GetBytes(PlayFabClientAPI.EncryptString(serializer.SerializeObject(request))),
                 ApiRequest = request,
                 ErrorCallback = errorCallback,
                 RequestHeaders = extraHeaders ?? new Dictionary<string, string>(), // Use any headers provided by the customer
@@ -184,7 +184,8 @@ namespace PlayFab.Internal
             reqContainer.RequestHeaders["X-PlayFabSDK"] = PlayFabSettings.VersionString; // Tell PlayFab which SDK this is
             switch (authType)
             {
-#if ENABLE_PLAYFABSERVER_API || ENABLE_PLAYFABADMIN_API || UNITY_EDITOR
+//#if ENABLE_PLAYFABSERVER_API || ENABLE_PLAYFABADMIN_API || UNITY_EDITOR
+#if !DISABLE_PLAYFABSERVER_API						  
                 case AuthType.DevSecretKey:
                     if (apiSettings.DeveloperSecretKey == null) throw new PlayFabException(PlayFabExceptionCode.DeveloperKeyNotSet, "DeveloperSecretKey is not found in Request, Server Instance or PlayFabSettings");
                     reqContainer.RequestHeaders["X-SecretKey"] = apiSettings.DeveloperSecretKey; break;

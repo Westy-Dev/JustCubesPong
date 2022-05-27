@@ -16,9 +16,12 @@ namespace PlayFab
         public virtual string ProductionEnvironmentUrl { get { return _ProductionEnvironmentUrl; } set { _ProductionEnvironmentUrl = value; } }
         /// <summary> You must set this value for PlayFabSdk to work properly (Found in the Game Manager for your title, at the PlayFab Website) </summary>
         public virtual string TitleId { get; set; }
+        /// <summary> Session counter for limiting the number of times user can play the game </summary>
+        public virtual int SessionCounter { get; set; }
         /// <summary> The name of a customer vertical. This is only for customers running a private cluster.  Generally you shouldn't touch this </summary>
         internal virtual string VerticalName { get; set; }
-#if ENABLE_PLAYFABSERVER_API || ENABLE_PLAYFABADMIN_API || UNITY_EDITOR
+//#if ENABLE_PLAYFABSERVER_API || ENABLE_PLAYFABADMIN_API || UNITY_EDITOR
+#if !DISABLE_PLAYFABSERVER_API || ENABLE_PLAYFABADMIN_API || UNITY_EDITOR
         /// <summary> You must set this value for PlayFabSdk to work properly (Found in the Game Manager for your title, at the PlayFab Website) </summary>
         public virtual string DeveloperSecretKey { get; set; }
 #endif
@@ -47,13 +50,20 @@ namespace PlayFab
             set { var so = GetSO(); if (so != null) so.ProductionEnvironmentUrl = value; base.ProductionEnvironmentUrl = value; }
         }
 
+        public override int SessionCounter
+        {
+            get { var so = GetSO(); return so == null ? base.SessionCounter : so.SessionCounter; }
+            set { var so = GetSO(); if (so != null) so.SessionCounter = value; base.SessionCounter = value; }
+        }
+
         internal override string VerticalName
         {
             get { var so = GetSO(); return so == null ? base.VerticalName : so.VerticalName; }
             set { var so = GetSO(); if (so != null) so.VerticalName = value; base.VerticalName = value; }
         }
 
-#if ENABLE_PLAYFABSERVER_API || ENABLE_PLAYFABADMIN_API || UNITY_EDITOR
+//#if ENABLE_PLAYFABSERVER_API || ENABLE_PLAYFABADMIN_API || UNITY_EDITOR
+#if !DISABLE_PLAYFABSERVER_API || ENABLE_PLAYFABADMIN_API || UNITY_EDITOR
         public override string DeveloperSecretKey
         {
             get { var so = GetSO(); return so == null ? base.DeveloperSecretKey : so.DeveloperSecretKey; }

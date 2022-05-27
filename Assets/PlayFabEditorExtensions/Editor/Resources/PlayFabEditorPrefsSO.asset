@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d0199c11aa6f514784c5c69cd8378d8, type: 3}
   m_Name: PlayFabEditorPrefsSO
   m_EditorClassIdentifier: 
-  DevAccountEmail: justcubesnft@gmail.com
-  DevAccountToken: um3od6bgik4bknzh5wm8rjp831oxqqufa7m6x9783oycqfzjuzqcrwk98foo6zekw6kp1t4hoo6cukbptys4nf7p9xufkq8u3dqthwizarrcsjimtmgfofypi1acnyr9su4fuatwf5h598rdnut5on44owzudz653ajjddyfk1swy6b6wu3cjbpd5p1yfthusgmzocqh
-  SelectedStudio: 'JustCubes Game Design '
-  SdkPath: Assets/PlayFabSDK
+  DevAccountEmail: 
+  DevAccountToken: 
+  SelectedStudio: 
+  SdkPath: 
   EdExPath: 
   LocalCloudScriptPath: 
   PanelIsShown: 0

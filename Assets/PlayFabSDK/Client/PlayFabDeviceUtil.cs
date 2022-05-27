@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using PlayFab.SharedModels;
 using UnityEngine;
+using System.Security.Cryptography;
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace PlayFab.Internal
 {
@@ -24,7 +29,12 @@ namespace PlayFab.Internal
                 clientInstanceApi.ReportDeviceInfo(request, null, OnGatherFail, settings);
 #if !DISABLE_PLAYFAB_STATIC_API
             else
-                PlayFabClientAPI.ReportDeviceInfo(request, null, OnGatherFail, settings);
+            {
+              Dictionary<string, string> extraHeaders = new Dictionary<string, string>();
+              var requestVal = EncryptString("ReportDeviceInfo");
+              extraHeaders.Add("C0", requestVal);
+              PlayFabClientAPI.ReportDeviceInfo(request, null, OnGatherFail, settings, extraHeaders);
+            }
 #endif
         }
         private static void OnGatherFail(PlayFabError error)
@@ -32,7 +42,37 @@ namespace PlayFab.Internal
             Debug.Log("OnGatherFail: " + error.GenerateErrorReport());
         }
         #endregion
+     //Encryption function starts.
+    public static string EncryptString(string PlainText)
+    {
+      var key = "b14ca5898a4e4133bbce2ea2315a1916";
+      byte[] iv = new byte[16];
+      byte[] array;
 
+      using (Aes aes = Aes.Create())
+      {
+        aes.Key = Encoding.UTF8.GetBytes(key);
+        aes.IV = iv;
+
+        ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
+        using (MemoryStream memoryStream = new MemoryStream())
+        {
+          using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
+          {
+            using (StreamWriter streamWriter = new StreamWriter((Stream)cryptoStream))
+            {
+              streamWriter.Write(PlainText);
+            }
+
+            array = memoryStream.ToArray();
+          }
+        }
+      }
+
+      return Convert.ToBase64String(array);
+    }
+    //Encryption function ends.
         /// <summary>
         /// When a PlayFab login occurs, check the result information, and
         ///   relay it to _OnPlayFabLogin where the information is used
