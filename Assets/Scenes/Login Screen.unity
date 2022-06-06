@@ -4082,12 +4082,12 @@ PrefabInstance:
     - target: {fileID: 6266890725912523073, guid: 116667ed98661304da1568439e2a3426,
         type: 3}
       propertyPath: MoralisServerURI
-      value: https://7j8fzy0obayk.usemoralis.com:2053/server
+      value: https://sl0ur7wfutfb.usemoralis.com:2053/server
       objectReference: {fileID: 0}
     - target: {fileID: 6266890725912523073, guid: 116667ed98661304da1568439e2a3426,
         type: 3}
       propertyPath: MoralisApplicationId
-      value: WPNljt8BydIBqqX0HTRO8ULf9iIuMCXPp9qHwoOr
+      value: rLOgjLa82fwTxNeC22urv3gwnHboqArQdd2Yo8qM
       objectReference: {fileID: 0}
     - target: {fileID: 6266890725912523102, guid: 116667ed98661304da1568439e2a3426,
         type: 3}
