@@ -14,7 +14,9 @@ public class AppManager : MonoBehaviour
 {
     public MoralisController moralisController;
     public GameObject authButton;
+    public GameObject loginScreen;
     public Text walletAddressLabel;
+    private MoralisUser user;
 
     private async void Start()
     {
@@ -75,28 +77,40 @@ public class AppManager : MonoBehaviour
             Debug.Log("Logging in user.");
 
             // Attempt to login user.
-            MoralisUser user = await MoralisInterface.LogInAsync(authData);
+            user = await MoralisInterface.LogInAsync(authData);
 
+            await MoralisInterface.
             if (user != null)
             {
                 Debug.Log($"User {user.username} logged in successfully. ");
                 
                 authButton.SetActive(false);
+                loginScreen.SetActive(true);
                 walletAddressLabel.gameObject.SetActive(true);
-                walletAddressLabel.text = GetWalletAddress(user);
+                walletAddressLabel.text = "Connected: " + GetWalletAddress().Substring(0,6) + "..." + GetWalletAddress().Substring(38);
             }
             else
             {
+                authButton.SetActive(true);
+                loginScreen.SetActive(false);
+                walletAddressLabel.gameObject.SetActive(true);
+                walletAddressLabel.text = "Problem when connecting to blockchain.";
                 Debug.Log("User login failed.");
             }
         }
     }
     
-    private string GetWalletAddress(MoralisUser user)
+    public string GetWalletAddress()
     {
-        return user.ethAddress;
+        if (user != null)
+        {
+            return user.ethAddress;
+        } else
+        {
+            return "";
+        }
     }
-    
+
     public async void HandleAuthButtonClick()
     {
         await LoginWithWeb3();

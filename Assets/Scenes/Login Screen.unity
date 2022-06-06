@@ -3125,15 +3125,15 @@ RectTransform:
   m_GameObject: {fileID: 1090635411}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 636727381}
-  m_Father: {fileID: 1602576123}
-  m_RootOrder: 5
+  m_Father: {fileID: 1969541028}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -212}
+  m_AnchoredPosition: {x: 0, y: -91}
   m_SizeDelta: {x: 640, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1090635413
@@ -3485,6 +3485,7 @@ MonoBehaviour:
   PlayerBestScoreGameOver: {fileID: 0}
   musicAudioSource: {fileID: 1120051917}
   soundFXAudioSource: {fileID: 0}
+  appManager: {fileID: 2058357220}
 --- !u!114 &1120051916
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3805,11 +3806,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1969541028}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -0.0016479, y: -346}
+  m_AnchoredPosition: {x: -0.0016479, y: -135}
   m_SizeDelta: {x: 1919.9971, y: 245.64066}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1174608673
@@ -3834,18 +3835,18 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: f49448280913de84c93a1220c2d63481, type: 3}
-    m_FontSize: 120
+    m_FontSize: 35
     m_FontStyle: 0
     m_BestFit: 1
     m_MinSize: 0
     m_MaxSize: 200
-    m_Alignment: 4
+    m_Alignment: 2
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Wallet Address
+  m_Text: Connected
 --- !u!222 &1174608674
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5066,7 +5067,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1602576123
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5083,9 +5084,8 @@ RectTransform:
   - {fileID: 44361978}
   - {fileID: 251962549}
   - {fileID: 1240787813}
-  - {fileID: 1090635412}
   m_Father: {fileID: 1969541028}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -6052,7 +6052,7 @@ RectTransform:
   - {fileID: 1613301971}
   - {fileID: 1085017973}
   m_Father: {fileID: 1969541028}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -6248,7 +6248,7 @@ RectTransform:
   - {fileID: 155062773}
   - {fileID: 1975542763}
   m_Father: {fileID: 1969541028}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -6733,6 +6733,7 @@ RectTransform:
   - {fileID: 1826308095}
   - {fileID: 1476349113}
   - {fileID: 1708835117}
+  - {fileID: 1090635412}
   - {fileID: 1602576123}
   - {fileID: 1872735563}
   - {fileID: 1832843854}
@@ -7145,6 +7146,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moralisController: {fileID: 1261678291}
   authButton: {fileID: 1090635411}
+  loginScreen: {fileID: 1602576122}
   walletAddressLabel: {fileID: 1174608673}
 --- !u!4 &2058357221
 Transform:
