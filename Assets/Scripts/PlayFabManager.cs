@@ -42,9 +42,6 @@ public class PlayFabManager : MonoBehaviour
     [SerializeField]
     private AudioSource soundFXAudioSource;
 
-    [SerializeField]
-    private AppManager appManager;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -104,7 +101,7 @@ public class PlayFabManager : MonoBehaviour
             Password = registerPasswordInput.text,
             RequireBothUsernameAndEmail = false,
             CustomTags = new Dictionary<string, string>() {
-                        {"PlayerAddress", "appManager.GetWalletAddress()"}
+                        {"PlayerAddress", ""}
             }
 
         };

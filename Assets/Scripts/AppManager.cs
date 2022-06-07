@@ -8,6 +8,8 @@ using UnityEngine.UI;
 using MoralisWeb3ApiSdk;
 using Moralis.WebGL;
 using Moralis.WebGL.Platform.Objects;
+using MoralisUnity;
+using MoralisUnity.Web3Api.Models;
 using Moralis.WebGL.Hex.HexTypes;
 
 #if UNITY_WEBGL
@@ -43,11 +45,14 @@ public class AppManager : MonoBehaviour
         
         if (!Web3GL.IsConnected())
         {
+            Debug.Log("User not connected. Initiating connection");
             userAddr = await MoralisInterface.SetupWeb3();
+            Debug.Log("User connected with address: " + userAddr);
         }
         else
         {
             userAddr = Web3GL.Account();
+            Debug.Log("User connected with address: " + userAddr);
         }
 
         if (string.IsNullOrWhiteSpace(userAddr))
@@ -57,19 +62,24 @@ public class AppManager : MonoBehaviour
         else
         {
             string address = Web3GL.Account().ToLower();
+            Debug.Log("User address is : " + address);
             string appId = MoralisInterface.GetClient().ApplicationId;
+            Debug.Log("App ID is : " + appId);
             long serverTime = 0;
 
             // Retrieve server time from Moralis Server for message signature
+            Debug.Log("Obtaining server time from Moralis");
             Dictionary<string, object> serverTimeResponse = await MoralisInterface.GetClient().Cloud.RunAsync<Dictionary<string, object>>("getServerTime", new Dictionary<string, object>());
 
             if (serverTimeResponse == null || !serverTimeResponse.ContainsKey("dateTime") ||
                 !long.TryParse(serverTimeResponse["dateTime"].ToString(), out serverTime))
             {
-                Debug.Log("Failed to retrieve server time from Moralis Server!");
+                Debug.LogError("Failed to retrieve server time from Moralis Server!");
             }
 
             string signMessage = $"Moralis Authentication\n\nId: {appId}:{serverTime}";
+
+            Debug.Log("Message to sign by user: " + signMessage);
 
             string signature = await Web3GL.Sign(signMessage);
 
@@ -83,16 +93,24 @@ public class AppManager : MonoBehaviour
             // Attempt to login user.
             user = await MoralisInterface.LogInAsync(authData);
 
-            object[] parameters =
-            {
-                userAddr
-            };
+            //object[] parameters =
+            //{
+            //    userAddr
+            //};
 
-            HexBigInteger value = new HexBigInteger(0);
-            HexBigInteger gas = new HexBigInteger(0);
-            HexBigInteger gasPrice = new HexBigInteger(0);
+            //HexBigInteger value = new HexBigInteger(0);
+            //HexBigInteger gas = new HexBigInteger(0);
+            //HexBigInteger gasPrice = new HexBigInteger(0);
 
-            string resp = await MoralisInterface.ExecuteFunction(ContractAddress, ContractAbi, "tokenIdOfOwner", parameters, value, gas, gasPrice);
+            string resp = await Moralis.Web3Api.
+
+
+
+
+
+
+            string resp = await Web3GL.SendContract("tokenIdOfOwner", ContractAbi, ContractAddress, "[\"" + address + "\"]", "0", "", "");
+            //string resp = await MoralisInterface.ExecuteFunction(ContractAddress, ContractAbi, "tokenIdOfOwner", parameters, value, gas, gasPrice);
 
             
             if (user != null)
