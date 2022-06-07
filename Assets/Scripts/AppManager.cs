@@ -14,9 +14,8 @@ using MoralisUnity.Web3Api.Models;
 #if UNITY_WEBGL
 public class AppManager : MonoBehaviour
 {
-    public GameObject authButton;
     public GameObject loginScreen;
-    public GameObject authenticationKitObject;
+    public GameObject authenticationKitScreen;
     public AuthenticationKit authKit;
 
     public Text walletAddressLabel;
@@ -27,13 +26,15 @@ public class AppManager : MonoBehaviour
 
     private void Start()
     {
-        authKit = authenticationKitObject.GetComponent<AuthenticationKit>();
+        authKit = authenticationKitScreen.GetComponent<AuthenticationKit>();
+
+        authenticationKitScreen.SetActive(true);
+        loginScreen.SetActive(false);
     }
 
     public async void LoginChecks()
     {
         
-
         string userAddr = "";
         
         if (!Web3GL.IsConnected())
@@ -71,27 +72,28 @@ public class AppManager : MonoBehaviour
                 Debug.LogError("Failed to retrieve server time from Moralis Server!");
             }
 
-            object[] parameters =
-            {
-               userAddr
-            };
-
             NftOwnerCollection ownedCubes = await Moralis.Web3Api.Account.GetNFTsForContract(userAddr, ContractAddress, ChainList.eth);
             Debug.Log(ownedCubes.ToJson());
 
-            
-            if (user != null)
+            Debug.Log("Setting UI correctly");
+            Debug.Log("User is : " + user);
+            Debug.Log("Number of owned cubes : " + ownedCubes.Total);
+
+            //Get the currently logged in user
+            user = await Moralis.GetUserAsync();
+
+            if (user != null && ownedCubes.Total > 0)
             {
                 Debug.Log($"User {user.username} logged in successfully. ");
-                
-                authButton.SetActive(false);
+
+                authenticationKitScreen.SetActive(false);
                 loginScreen.SetActive(true);
                 walletAddressLabel.gameObject.SetActive(true);
                 walletAddressLabel.text = "Connected: " + GetWalletAddress().Substring(0,6) + "..." + GetWalletAddress().Substring(38);
             }
             else
             {
-                authButton.SetActive(true);
+                authenticationKitScreen.SetActive(true);
                 loginScreen.SetActive(false);
                 walletAddressLabel.gameObject.SetActive(true);
                 walletAddressLabel.text = "Problem when connecting to blockchain.";
@@ -99,7 +101,14 @@ public class AppManager : MonoBehaviour
             }
         }
     }
-    
+
+    public void Quit()
+    {
+        authKit.Disconnect();
+        authenticationKitScreen.SetActive(true);
+        loginScreen.SetActive(false);
+    }
+
     public string GetWalletAddress()
     {
         if (user != null)
