@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TitleId: 2C11F
   DeveloperSecretKey: JT86ED3JZH76T6CRQAUM9INO84MHUBNBGKXIMIYHQ1ZOYSZGXR
+  SessionCounter: 0
   ProductionEnvironmentUrl: 
   RequestType: 0
   DisableDeviceInfo: 0
@@ -25,4 +26,3 @@ MonoBehaviour:
   LoggerPort: 0
   EnableRealTimeLogging: 0
   LogCapLimit: 30
-  SessionCounter: 30

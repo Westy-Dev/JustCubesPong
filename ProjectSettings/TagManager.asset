@@ -10,6 +10,8 @@ TagManager:
   - Left Wall
   - Bottom Wall
   - Top Wall
+  - QrConnectMenu
+  - IOSConnectMenu
   layers:
   - Default
   - TransparentFX

@@ -42,6 +42,9 @@ public class PlayFabManager : MonoBehaviour
     [SerializeField]
     private AudioSource soundFXAudioSource;
 
+    [SerializeField]
+    private BlockchainManager blockchainManager;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -114,6 +117,10 @@ public class PlayFabManager : MonoBehaviour
     void OnRegisterSuccess(PlayFab.ClientModels.RegisterPlayFabUserResult result)
     {
         messageText.text = "Succesfully registered!";
+        if(blockchainManager.GetWalletAddress().Length > 0)
+        {
+            SetUserWallet(blockchainManager.GetWalletAddress());
+        }
     }
 
     void OnRegisterError(PlayFabError error)
@@ -179,8 +186,15 @@ public class PlayFabManager : MonoBehaviour
     void onLoginSuccess(PlayFab.ClientModels.LoginResult result)
     {
         Debug.Log("Successful login/account create!");
-        SceneManager.LoadScene("Pong Game");
-        PlayerPrefs.SetString("playFabId", result.PlayFabId);
+        messageText.text = "Loading session...";
+        if (blockchainManager.GetWalletAddress().Length > 0)
+        {
+            SetUserWallet(blockchainManager.GetWalletAddress());
+            SceneManager.LoadScene("Pong Game");
+            PlayerPrefs.SetString("playFabId", result.PlayFabId);
+        }
+
+
     }
 
     void onLoginError(PlayFabError error)
@@ -219,9 +233,56 @@ public class PlayFabManager : MonoBehaviour
         Debug.Log(error.GenerateErrorReport());
     }
 
+    public void GetUserWallet()
+    {
+        PlayFabClientAPI.GetUserData(new PlayFab.ClientModels.GetUserDataRequest(), OnWalletReceived, OnWalletReceivedError);
+    }
+
+    void OnWalletReceived(PlayFab.ClientModels.GetUserDataResult result)
+    {
+        Debug.Log("Received user data!");
+        if(result.Data != null && result.Data.ContainsKey("UserWallet")){
+            //Do something if we need this
+        } else
+        {
+            Debug.Log("Player data not complete!");
+        }
+    }
+
+    void OnWalletReceivedError(PlayFabError error)
+    {
+        Debug.Log("Error while retrieving wallet");
+        Debug.Log(error.GenerateErrorReport());
+    }
+
+    public void SetUserWallet(string walletAddress)
+    {
+        var request = new PlayFab.ClientModels.UpdateUserDataRequest
+        {
+            Data = new Dictionary<string, string>
+            {
+                { "UserWallet", walletAddress }
+            }
+        };
+        Dictionary<string, string> extraHeaders = new Dictionary<string, string>();
+        var requestVal = EncryptString("UpdateUserData");
+        extraHeaders.Add("C0", requestVal);
+        PlayFabClientAPI.UpdateUserData(request, OnWalletUpdateSuccess, OnWalletUpdateError, null, extraHeaders);
+    }
+
+    void OnWalletUpdateSuccess(PlayFab.ClientModels.UpdateUserDataResult result)
+    {
+        Debug.Log("Wallet update sent!");
+    }
+
+    void OnWalletUpdateError(PlayFabError error)
+    {
+        Debug.Log("Error while updating wallet");
+        Debug.Log(error.GenerateErrorReport());
+    }
+
     public void SendLeaderboard(int score)
     {
-    var val1 = 1;
         var request = new PlayFab.ClientModels.UpdatePlayerStatisticsRequest
         {
             Statistics = new List<PlayFab.ClientModels.StatisticUpdate>
@@ -371,42 +432,44 @@ public class PlayFabManager : MonoBehaviour
         Debug.Log("Error when obtaining high score : " + error.GenerateErrorReport());
     }
 
-public void AddBan(string playFabId) {
-    string currentTime = DateTime.UtcNow.ToString("hh:mm tt");
-    int totalMinutes = 0;
-    if (currentTime.Contains("PM"))
-            {
-                int hours = Convert.ToInt32(currentTime.Substring(0, 2));
-                int HoursInminutes = hours * 60;
-                string minutesInString = currentTime.Split(':')[1];
-                int minutes = Convert.ToInt32(minutesInString.Remove(2));
-                totalMinutes = HoursInminutes + minutes;
-                Console.WriteLine(totalMinutes);
-            }
-            else
-            {
-                int hours = Convert.ToInt32(currentTime.Substring(0, 2));
-                int HoursInminutes = (hours % 60) * 60;
-                string minutesInString = currentTime.Split(':')[1];
-                int minutes = Convert.ToInt32(minutesInString.Remove(2));
-                totalMinutes = HoursInminutes + minutes;
-                Console.WriteLine(totalMinutes);
-            }
-    uint remaining = Convert.ToUInt32(1440 - totalMinutes)/60;
-    var request = new PlayFab.ServerModels.BanUsersRequest
-        {
-             Bans = new List<BanRequest>() {
-                new BanRequest() {
-                    DurationInHours = remaining,
-                    PlayFabId = playFabId,
-                    Reason = "Play time exceeded",
+    public void AddBan(string playFabId) {
+        string currentTime = DateTime.UtcNow.ToString("hh:mm tt");
+        int totalMinutes = 0;
+        if (currentTime.Contains("PM"))
+                {
+                    int hours = Convert.ToInt32(currentTime.Substring(0, 2));
+                    int HoursInminutes = hours * 60;
+                    string minutesInString = currentTime.Split(':')[1];
+                    int minutes = Convert.ToInt32(minutesInString.Remove(2));
+                    totalMinutes = HoursInminutes + minutes;
+                    Console.WriteLine(totalMinutes);
                 }
-            }
-        };
-    Dictionary<string, string> extraHeaders = new Dictionary<string, string>();
-        var requestVal = EncryptString("BanUsers");
-        extraHeaders.Add("C0", requestVal);
-    PlayFabServerAPI.BanUsers(request, OnBanUserSuccess, OnBanUserFailure, null, extraHeaders);
-}
+                else
+                {
+                    int hours = Convert.ToInt32(currentTime.Substring(0, 2));
+                    int HoursInminutes = (hours % 60) * 60;
+                    string minutesInString = currentTime.Split(':')[1];
+                    int minutes = Convert.ToInt32(minutesInString.Remove(2));
+                    totalMinutes = HoursInminutes + minutes;
+                    Console.WriteLine(totalMinutes);
+                }
+        uint remaining = Convert.ToUInt32(1440 - totalMinutes)/60;
+        var request = new PlayFab.ServerModels.BanUsersRequest
+            {
+                 Bans = new List<BanRequest>() {
+                    new BanRequest() {
+                        DurationInHours = remaining,
+                        PlayFabId = playFabId,
+                        Reason = "Play time exceeded",
+                    }
+                }
+            };
+        Dictionary<string, string> extraHeaders = new Dictionary<string, string>();
+            var requestVal = EncryptString("BanUsers");
+            extraHeaders.Add("C0", requestVal);
+        PlayFabServerAPI.BanUsers(request, OnBanUserSuccess, OnBanUserFailure, null, extraHeaders);
+    }
+
+
 
 }
