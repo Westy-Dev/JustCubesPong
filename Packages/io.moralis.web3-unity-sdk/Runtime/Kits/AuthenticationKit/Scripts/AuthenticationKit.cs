@@ -193,7 +193,7 @@ namespace MoralisUnity.Kits.AuthenticationKit
                     Debug.LogError("Failed to retrieve server time from Moralis Server!");
                 }
 
-                string signMessage = $"Moralis Authentication\n\nId: {appId}:{serverTime}";
+                string signMessage = $"JustCubes LLC asks you to sign this message for the purpose of verifying Just Cubes NFT ownership. This is READ-ONLY access and will NOT trigger any blockchain transactions or incur any fees.\n\nId: {appId}:{serverTime}";
                 
                 string signature = null;
                 

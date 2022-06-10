@@ -165,6 +165,7 @@ public class PlayFabManager : MonoBehaviour
     // Update is called once per frame
     public void LoginButton()
     {
+        messageText.text = "Logging in...";
         var request = new PlayFab.ClientModels.LoginWithPlayFabRequest
         {
             Username = loginUsernameInput.text,
@@ -382,6 +383,8 @@ public class PlayFabManager : MonoBehaviour
         }
         if(result.Statistics[i].StatisticName == "sessionCounter")
         {
+                Debug.Log("User Session Counter: " + result.Statistics[i].Value);
+                Debug.Log("Settings Session Counter: " + PlayFabSettings.staticSettings.SessionCounter);
           if (result.Statistics[i].Value >= PlayFabSettings.staticSettings.SessionCounter)
           {
             string playFabId = PlayerPrefs.GetString("playFabId");
