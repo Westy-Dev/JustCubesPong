@@ -89,7 +89,7 @@ public class BlockchainManager : MonoBehaviour
                 authenticationKitScreen.SetActive(false);
                 loginScreen.SetActive(true);
                 walletAddressLabel.gameObject.SetActive(true);
-                walletAddressLabel.text = "Connected: " + GetWalletAddress().Substring(0,6) + "..." + GetWalletAddress().Substring(38);
+                walletAddressLabel.text = "Connected:\n" + GetWalletAddress().Substring(0,6) + "..." + GetWalletAddress().Substring(38);
             }
             else
             {
