@@ -35,6 +35,7 @@ public class PlayFabManager : MonoBehaviour
     public Transform LeaderboardRowsParent;
     public GameObject PlayerBestScore;
     public GameObject PlayerBestScoreGameOver;
+    public GameObject PlayerTriesText;
 
     [SerializeField]
     private AudioSource musicAudioSource;
@@ -136,7 +137,11 @@ public class PlayFabManager : MonoBehaviour
       var key = "b14ca5898a4e4133bbce2ea2315a1916";
       byte[] iv = new byte[16];
       byte[] array;
-
+        Debug.Log("IV IS : ");
+        foreach (byte b in iv)
+        {
+            Debug.Log(b);
+        }
       using (Aes aes = Aes.Create())
       {
         aes.Key = Encoding.UTF8.GetBytes(key);
@@ -383,6 +388,12 @@ public class PlayFabManager : MonoBehaviour
         }
         if(result.Statistics[i].StatisticName == "sessionCounter")
         {
+                if(PlayerTriesText != null)
+                {
+                    PlayerTriesText.GetComponent<Text>().text = "Tries: " + 
+                                                                result.Statistics[i].Value + "/" + 
+                                                                PlayFabSettings.staticSettings.SessionCounter;
+                }
                 Debug.Log("User Session Counter: " + result.Statistics[i].Value);
                 Debug.Log("Settings Session Counter: " + PlayFabSettings.staticSettings.SessionCounter);
           if (result.Statistics[i].Value >= PlayFabSettings.staticSettings.SessionCounter)

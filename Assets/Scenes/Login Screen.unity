@@ -3419,6 +3419,7 @@ MonoBehaviour:
   LeaderboardRowsParent: {fileID: 0}
   PlayerBestScore: {fileID: 0}
   PlayerBestScoreGameOver: {fileID: 0}
+  PlayerTriesText: {fileID: 0}
   musicAudioSource: {fileID: 1120051917}
   soundFXAudioSource: {fileID: 0}
   blockchainManager: {fileID: 1872182443}
