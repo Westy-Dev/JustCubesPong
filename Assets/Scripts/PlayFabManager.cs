@@ -49,6 +49,11 @@ public class PlayFabManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //Set the log filter type so we don't display logs in release builds
+        #if !(DEVELOPMENT_BUILD || UNITY_EDITOR)
+                Debug.unityLogger.filterLogType = LogType.Exception;
+        #endif
+
         if (musicAudioSource != null)
         {
             float musicVolumeValue;
