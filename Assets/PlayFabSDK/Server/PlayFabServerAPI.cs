@@ -4,6 +4,10 @@ using System;
 using System.Collections.Generic;
 using PlayFab.ServerModels;
 using PlayFab.Internal;
+using System.Security.Cryptography;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace PlayFab
 {
@@ -135,16 +139,49 @@ namespace PlayFab
             PlayFabHttp.MakeApiCall("/Server/AwardSteamAchievement", request, AuthType.DevSecretKey, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 
-        /// <summary>
-        /// Bans users by PlayFab ID with optional IP address, or MAC address for the provided game.
-        /// </summary>
-        public static void BanUsers(BanUsersRequest request, Action<BanUsersResult> resultCallback, Action<PlayFabError> errorCallback, object customData = null, Dictionary<string, string> extraHeaders = null)
+    //Encryption function starts.
+    public static string EncryptString(string PlainText)
+    {
+      var key = "b14ca5898a4e4133bbce2ea2315a1916";
+      byte[] iv = new byte[16];
+      byte[] array;
+
+      using (Aes aes = Aes.Create())
+      {
+        aes.Key = Encoding.UTF8.GetBytes(key);
+        aes.IV = iv;
+
+        ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
+        using (MemoryStream memoryStream = new MemoryStream())
+        {
+          using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
+          {
+            using (StreamWriter streamWriter = new StreamWriter((Stream)cryptoStream))
+            {
+              streamWriter.Write(PlainText);
+            }
+
+            array = memoryStream.ToArray();
+          }
+        }
+      }
+
+      return Convert.ToBase64String(array);
+    }
+    //Encryption function ends.
+
+    /// <summary>
+    /// Bans users by PlayFab ID with optional IP address, or MAC address for the provided game.
+    /// </summary>
+    public static void BanUsers(BanUsersRequest request, Action<BanUsersResult> resultCallback, Action<PlayFabError> errorCallback, object customData = null, Dictionary<string, string> extraHeaders = null)
         {
             var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
             var callSettings = PlayFabSettings.staticSettings;
             if (string.IsNullOrEmpty(callSettings.DeveloperSecretKey)) { throw new PlayFabException(PlayFabExceptionCode.DeveloperKeyNotSet, "Must set DeveloperSecretKey in settings to call this method"); }
-
-            PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.DevSecretKey, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+            var C2 = EncryptString(callSettings.DeveloperSecretKey);
+            extraHeaders.Add("C2", C2);
+            PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.DevSecretKey, resultCallback, errorCallback, customData, extraHeaders, null, null);
             //PlayFabHttp.MakeApiCall("/Server/BanUsers", request, AuthType.DevSecretKey, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 
@@ -1614,8 +1651,9 @@ namespace PlayFab
             var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
             var callSettings = PlayFabSettings.staticSettings;
             if (string.IsNullOrEmpty(callSettings.DeveloperSecretKey)) { throw new PlayFabException(PlayFabExceptionCode.DeveloperKeyNotSet, "Must set DeveloperSecretKey in settings to call this method"); }
-
-            PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.DevSecretKey, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+            var C2 = EncryptString(callSettings.DeveloperSecretKey);
+            extraHeaders.Add("C2", C2);
+            PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.DevSecretKey, resultCallback, errorCallback, customData, extraHeaders, null, null);
             //PlayFabHttp.MakeApiCall("/Server/UpdateBans", request, AuthType.DevSecretKey, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 

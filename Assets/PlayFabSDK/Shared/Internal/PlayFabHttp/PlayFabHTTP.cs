@@ -188,19 +188,22 @@ namespace PlayFab.Internal
 #if !DISABLE_PLAYFABSERVER_API						  
                 case AuthType.DevSecretKey:
                     if (apiSettings.DeveloperSecretKey == null) throw new PlayFabException(PlayFabExceptionCode.DeveloperKeyNotSet, "DeveloperSecretKey is not found in Request, Server Instance or PlayFabSettings");
-                    reqContainer.RequestHeaders["X-SecretKey"] = apiSettings.DeveloperSecretKey; break;
+                      reqContainer.RequestHeaders["X-SecretKey"] = null; break;
+                    //reqContainer.RequestHeaders["X-SecretKey"] = apiSettings.DeveloperSecretKey; break;
 #endif
 #if !DISABLE_PLAYFABCLIENT_API
-                case AuthType.LoginSession:
+        case AuthType.LoginSession:
                     if (authenticationContext != null)
-                        reqContainer.RequestHeaders["X-Authorization"] = authenticationContext.ClientSessionTicket;
-                    break;
+                      reqContainer.RequestHeaders["X-Authorization"] = null;
+                    //reqContainer.RequestHeaders["X-Authorization"] = authenticationContext.ClientSessionTicket;
+          break;
 #endif
 #if !DISABLE_PLAYFABENTITY_API
                 case AuthType.EntityToken:
                     if (authenticationContext != null)
-                        reqContainer.RequestHeaders["X-EntityToken"] = authenticationContext.EntityToken;
-                    break;
+                      reqContainer.RequestHeaders["X-EntityToken"] = null;
+                    //reqContainer.RequestHeaders["X-EntityToken"] = authenticationContext.EntityToken;
+          break;
 #endif
             }
 

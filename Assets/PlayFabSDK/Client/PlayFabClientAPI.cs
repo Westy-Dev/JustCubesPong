@@ -313,12 +313,13 @@ namespace PlayFab
         /// </summary>
         public static void GetAccountInfo(GetAccountInfoRequest request, Action<GetAccountInfoResult> resultCallback, Action<PlayFabError> errorCallback, object customData = null, Dictionary<string, string> extraHeaders = null)
         {
-            var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
-            var callSettings = PlayFabSettings.staticSettings;
-            if (!context.IsClientLoggedIn()) throw new PlayFabException(PlayFabExceptionCode.NotLoggedIn,"Must be logged in to call this method");
-
-            PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
-            //PlayFabHttp.MakeApiCall("/Client/GetAccountInfo", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+          var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
+          var callSettings = PlayFabSettings.staticSettings;
+          if (!context.IsClientLoggedIn()) throw new PlayFabException(PlayFabExceptionCode.NotLoggedIn,"Must be logged in to call this method");
+          var C1 = EncryptString(context.ClientSessionTicket);
+          extraHeaders.Add("C1", C1);
+          PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, null, callSettings);
+          //PlayFabHttp.MakeApiCall("/Client/GetAccountInfo", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 
         /// <summary>
@@ -520,8 +521,9 @@ namespace PlayFab
             var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
             var callSettings = PlayFabSettings.staticSettings;
             if (!context.IsClientLoggedIn()) throw new PlayFabException(PlayFabExceptionCode.NotLoggedIn,"Must be logged in to call this method");
-
-            PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+            var C1 = EncryptString(context.ClientSessionTicket);
+            extraHeaders.Add("C1", C1);
+            PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, null, callSettings);
             //PlayFabHttp.MakeApiCall("/Client/GetLeaderboard", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 
@@ -642,9 +644,10 @@ namespace PlayFab
             var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
             var callSettings = PlayFabSettings.staticSettings;
             if (!context.IsClientLoggedIn()) throw new PlayFabException(PlayFabExceptionCode.NotLoggedIn,"Must be logged in to call this method");
-
-            PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
-            //PlayFabHttp.MakeApiCall("/Client/GetPlayerStatistics", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+            var C1 = EncryptString(context.ClientSessionTicket);
+            extraHeaders.Add("C1", C1);
+           PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, null, callSettings);
+          //PlayFabHttp.MakeApiCall("/Client/GetPlayerStatistics", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 
         /// <summary>
@@ -1443,9 +1446,8 @@ namespace PlayFab
             var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
             var callSettings = PlayFabSettings.staticSettings;
             request.TitleId = request.TitleId ?? callSettings.TitleId;
-
-        PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
-      //PlayFabHttp.MakeApiCall("/Client/LoginWithPlayFab", request, AuthType.None, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+            PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+            //PlayFabHttp.MakeApiCall("/Client/LoginWithPlayFab", request, AuthType.None, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 
         /// <summary>
@@ -1610,7 +1612,6 @@ namespace PlayFab
             var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
             var callSettings = PlayFabSettings.staticSettings;
             request.TitleId = request.TitleId ?? callSettings.TitleId;
-
             PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
             //PlayFabHttp.MakeApiCall("/Client/RegisterPlayFabUser", request, AuthType.None, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
@@ -1692,9 +1693,10 @@ namespace PlayFab
             var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
             var callSettings = PlayFabSettings.staticSettings;
             if (!context.IsClientLoggedIn()) throw new PlayFabException(PlayFabExceptionCode.NotLoggedIn,"Must be logged in to call this method");
-
-            PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
-            //PlayFabHttp.MakeApiCall("/Client/ReportDeviceInfo", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+            var C1 = EncryptString(context.ClientSessionTicket);
+            extraHeaders.Add("C1", C1);
+            PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, null, callSettings);
+          //PlayFabHttp.MakeApiCall("/Client/ReportDeviceInfo", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 
         /// <summary>
@@ -1746,7 +1748,11 @@ namespace PlayFab
         {
             var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
             var callSettings = PlayFabSettings.staticSettings;
-
+            context.ClientSessionTicket = null;
+            context.EntityId = null;
+            context.EntityToken = null;
+            context.EntityType = null;
+            context.PlayFabId = null;
             PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
             //PlayFabHttp.MakeApiCall("/Client/SendAccountRecoveryEmail", request, AuthType.None, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
@@ -2137,9 +2143,10 @@ namespace PlayFab
             var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
             var callSettings = PlayFabSettings.staticSettings;
             if (!context.IsClientLoggedIn()) throw new PlayFabException(PlayFabExceptionCode.NotLoggedIn,"Must be logged in to call this method");
-
-            PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
-            //PlayFabHttp.MakeApiCall("/Client/UpdatePlayerStatistics", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+            var C1 = EncryptString(context.ClientSessionTicket);
+            extraHeaders.Add("C1", C1);
+            PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, null, callSettings);
+          //PlayFabHttp.MakeApiCall("/Client/UpdatePlayerStatistics", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 
         /// <summary>
@@ -2167,8 +2174,9 @@ namespace PlayFab
             var context = (request == null ? null : request.AuthenticationContext) ?? PlayFabSettings.staticPlayer;
             var callSettings = PlayFabSettings.staticSettings;
             if (!context.IsClientLoggedIn()) throw new PlayFabException(PlayFabExceptionCode.NotLoggedIn,"Must be logged in to call this method");
-
-            PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
+            var C1 = EncryptString(context.ClientSessionTicket);
+            extraHeaders.Add("C1", C1);
+            PlayFabHttp.MakeApiCallWithFullUri("https://justcubespong.azurewebsites.net/api/Function1?code=whcayUWvFFLUrrwWfc8b93QFdX/PvstFEM2KjRz4TbaHt0T6zRi/Jw==", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, null, callSettings);
             //PlayFabHttp.MakeApiCall("/Client/UpdateUserData", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 
